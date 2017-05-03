@@ -3,7 +3,8 @@
     "displayName": "Scss2Css",
     "description": "compile SASS/SCSS to css",
     "version": "0.0.1",
-    "publisher": "cyy",
+    "publisher": "cyyvs",
+    "icon": "icon.jpeg",
     "engines": {
         "vscode": "^1.11.0"
     },
