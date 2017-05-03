@@ -1,30 +1,214 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 var vscode = require('vscode');
+var fs = require('fs');
+var compileSass = require('./lib/sass.node.spk.js');
+var pathModule = require('path');
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+var CompileSassExtension = function() {
+
+    // Private fields ---------------------------------------------------------
+
+    var outputChannel;
+
+    // Constructor ------------------------------------------------------------
+
+    outputChannel = vscode.window.createOutputChannel("Scss2Css");
+
+    // Private functions ------------------------------------------------------
+
+    // Processes result of css file generation.
+    function handleResult(outputPath, result) {
+
+        if (result.status == 0) {
+
+            try {
+                fs.writeFileSync(outputPath, result.text, { flags: "w" });
+            } catch (e) {
+                outputChannel.appendLine("Failed to generate CSS: " + e);
+            }
+
+            outputChannel.appendLine("Successfully generated CSS: " + outputPath);
+        } else {
+
+            if (result.formatted) {
+                outputChannel.appendLine(result.formatted);
+            } else if (result.message) {
+                outputChannel.appendLine(result.message);
+            } else {
+                outputChannel.appendLine("Failed to generate CSS from SASS, but the error is unknown.");
+            }
+
+            vscode.window.showErrorMessage('Scss2Css: could not generate CSS file. See Output panel for details.');
+            outputChannel.show(true);
+        }
+    }
+
+    // Generates target path for scss/sass file basing on its path
+    // and Scss2Css.targetDir setting. If the setting specifies
+    // relative path, current workspace folder is used as root.
+    function generateTargetPath(path) {
+
+        var configuration = vscode.workspace.getConfiguration('Scss2Css');
+
+        var targetDir = pathModule.dirname(path);
+        var filename = pathModule.basename(path);
+        if (configuration.targetDir != undefined && configuration.targetDir.length > 0) {
+
+            if (pathModule.isAbsolute(configuration.targetDir)) {
+                targetDir = configuration.targetDir;
+            } else {
+                var folder = vscode.workspace.rootPath;
+                if (folder == undefined) {
+                    throw "Path specified in Scss2Css.targetDir is relative, but there is no open folder in VS Code!";
+                }
+
+                targetDir = pathModule.join(folder, configuration.targetDir);
+            }
+        }
+
+        return {
+            targetDir: targetDir,
+            filename: filename
+        };
+    }
+
+    // Compiles single scss/sass file.
+    function compileFile(path) {
+
+        outputChannel.clear();
+
+        var configuration = vscode.workspace.getConfiguration('Scss2Css');
+        console.log(configuration);
+
+        var outputPathData = generateTargetPath(path);
+
+        // Iterate through formats from configuration
+
+        if (configuration.formats.length == 0) {
+            throw "No formats are specified. Define Scss2Css.formats setting (or remove to use defaults)";
+        }
+
+        for (var i = 0; i < configuration.formats.length; i++) {
+
+            var format = configuration.formats[i];
+
+            // Evaluate style for sass generator
+            var style;
+            switch (format.format) {
+                case "nested":
+                    style = compileSass.Sass.style.nested;
+                    break;
+                case "compact":
+                    style = compileSass.Sass.style.compact;
+                    break;
+                case "expanded":
+                    style = compileSass.Sass.style.expanded;
+                    break;
+                case "compressed":
+                    style = compileSass.Sass.style.compressed;
+                    break;
+                default:
+                    throw "Invalid format specified for Scss2Css.formats[" + i + "]. Look at setting's hint for available formats.";
+            }
+
+            // Check target extension
+            if (format.extension == undefined || format.extension.length == 0)
+                throw "No extension specified for Scss2Css.formats[" + i + "].";
+            var fileName = outputPathData.filename.substring(0, outputPathData.filename.lastIndexOf('.'));
+            let mainFile = configuration.mainFile;
+            if (mainFile) {
+                path = path.substring(0, path.lastIndexOf('/')) + '/' + mainFile;
+                fileName = mainFile.substring(0, mainFile.lastIndexOf('.'));
+            }
+            console.log(path);
+            var targetPath = pathModule.join(outputPathData.targetDir, fileName + format.extension);
+            // Using closure to properly pass local variables to callback
+            (function(path_, targetPath_, style_) {
+
+                // Run the compilation process
+                compileSass(path_, { style: style_ }, function(result) {
+
+                    handleResult(targetPath_, result);
+                });
+
+            })(path, targetPath, style);
+        }
+    }
+
+    // Checks, if the file matches the exclude regular expression
+    function checkExclude(filename) {
+
+        var configuration = vscode.workspace.getConfiguration('Scss2Css');
+        return configuration.excludeRegex.length > 0 && new RegExp(configuration.excludeRegex).test(filename);
+    }
+
+    // Public -----------------------------------------------------------------
+
+    return {
+
+        OnSave: function(document) {
+
+            try {
+
+                var configuration = vscode.workspace.getConfiguration('Scss2Css');
+                var filename = pathModule.basename(document.fileName);
+
+                if (configuration.compileAfterSave) {
+
+                    if (document.fileName.toLowerCase().endsWith('.scss') ||
+                        document.fileName.toLowerCase().endsWith('.sass')) {
+
+                        if (!checkExclude(filename)) {
+                            compileFile(document.fileName);
+                        } else {
+                            outputChannel.appendLine("File " + document.fileName + " is excluded from building to CSS. Check Scss2Css.excludeRegex setting.");
+                        }
+                    }
+                }
+
+            } catch (e) {
+                vscode.window.showErrorMessage('Scss2Css: could not generate CSS file: ' + e);
+            }
+        },
+        CompileAll: function() {
+
+            var configuration = vscode.workspace.getConfiguration('Scss2Css');
+
+            vscode.workspace.findFiles("**/*.s[ac]ss").then(function(files) {
+
+                try {
+                    for (var i = 0; i < files.length; i++) {
+
+                        var filename = pathModule.basename(files[i].fsPath);
+                        if (checkExclude(filename)) {
+
+                            outputChannel.appendLine("File " + filename + " is excluded from building to CSS. Check Scss2Css.excludeRegex setting.");
+                            continue;
+                        }
+
+                        compileFile(files[i].fsPath);
+                    }
+                } catch (e) {
+                    vscode.window.showErrorMessage('Scss2Css: could not generate CSS file: ' + e);
+                }
+            });
+        }
+    };
+};
+
 function activate(context) {
 
-    // Use the console to output diagnostic information (console.log) and errors (console.error)
-    // This line of code will only be executed once when your extension is activated
-    console.log('Congratulations, your extension "scss2css" is now active!');
+    var extension = CompileSassExtension();
 
-    // The command has been defined in the package.json file
-    // Now provide the implementation of the command with  registerCommand
-    // The commandId parameter must match the command field in package.json
-    var disposable = vscode.commands.registerCommand('extension.sayHello', function () {
-        // The code you place here will be executed every time your command is executed
+    vscode.workspace.onDidSaveTextDocument(function(document) { extension.OnSave(document) });
 
-        // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World!');
+    var disposable = vscode.commands.registerCommand('Scss2Css.compileAll', function() {
+        extension.CompileAll();
     });
 
     context.subscriptions.push(disposable);
 }
-exports.activate = activate;
 
-// this method is called when your extension is deactivated
-function deactivate() {
-}
+function deactivate() {}
+
+exports.activate = activate;
 exports.deactivate = deactivate;

@@ -1,24 +1,67 @@
 {
-    "name": "scss2css",
-    "displayName": "scss2css",
+    "name": "Scss2Css",
+    "displayName": "Scss2Css",
     "description": "compile SASS/SCSS to css",
     "version": "0.0.1",
     "publisher": "cyy",
     "engines": {
         "vscode": "^1.11.0"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/cyy0418/scss2css-vscode.git"
+    },
     "categories": [
         "Other"
     ],
     "activationEvents": [
-        "onCommand:extension.sayHello"
+        "*"
     ],
     "main": "./extension",
     "contributes": {
         "commands": [{
-            "command": "extension.sayHello",
-            "title": "Hello World"
-        }]
+            "command": "Scss2Css.compileAll",
+            "title": "Compile all SCSS/SASS files to css"
+        }],
+        "configuration": {
+            "type": "object",
+            "title": "Scss2Css 配置",
+            "properties": {
+                "Scss2Css.compileAfterSave": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "保存后自动编译"
+                },
+                "Scss2Css.formats": {
+                    "type": "array",
+                    "default": [{
+                            "format": "expanded",
+                            "extension": ".css"
+                        },
+                        {
+                            "format": "compressed",
+                            "extension": ".min.css"
+                        }
+                    ],
+                    "description": "css 文件输出方式. 使用 \"nested\", \"expanded\", \"compact\" or \"compressed\" ."
+                },
+                "Scss2Css.excludeRegex": {
+                    "type": "string",
+                    "default": "",
+                    "description": "排除不处理文件的正则表达式."
+                },
+                "Scss2Css.targetDir": {
+                    "type": "string",
+                    "default": "",
+                    "description": "生成的目录路径.默认当前目录"
+                },
+                "Scss2Css.mainFile": {
+                    "type": "string",
+                    "default": "main.scss",
+                    "description": "输出的主文件名"
+                }
+            }
+        }
     },
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install",
