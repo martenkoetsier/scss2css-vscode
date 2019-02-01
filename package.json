@@ -1,79 +1,97 @@
 {
-    "name": "Scss2Css",
-    "displayName": "Scss2Css",
-    "description": "compile SASS/SCSS to css",
-    "version": "0.0.1",
-    "publisher": "cyyvs",
-    "icon": "icon.jpeg",
-    "engines": {
-        "vscode": "^1.11.0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/cyy0418/scss2css-vscode.git"
-    },
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "*"
-    ],
-    "main": "./extension",
-    "contributes": {
-        "commands": [{
-            "command": "Scss2Css.compileAll",
-            "title": "Compile all SCSS/SASS files to css"
-        }],
-        "configuration": {
-            "type": "object",
-            "title": "Scss2Css 配置",
-            "properties": {
-                "Scss2Css.compileAfterSave": {
-                    "type": "boolean",
-                    "default": true,
-                    "description": "保存后自动编译"
-                },
-                "Scss2Css.formats": {
-                    "type": "array",
-                    "default": [{
-                            "format": "expanded",
-                            "extension": ".css"
-                        },
-                        {
-                            "format": "compressed",
-                            "extension": ".min.css"
-                        }
-                    ],
-                    "description": "css 文件输出方式. 使用 \"nested\", \"expanded\", \"compact\" or \"compressed\" ."
-                },
-                "Scss2Css.excludeRegex": {
-                    "type": "string",
-                    "default": "",
-                    "description": "排除不处理文件的正则表达式."
-                },
-                "Scss2Css.targetDir": {
-                    "type": "string",
-                    "default": "",
-                    "description": "生成的目录路径.默认当前目录"
-                },
-                "Scss2Css.mainFile": {
-                    "type": "string",
-                    "default": "main.scss",
-                    "description": "输出的主文件名"
-                }
-            }
-        }
-    },
-    "scripts": {
-        "postinstall": "node ./node_modules/vscode/bin/install",
-        "test": "node ./node_modules/vscode/bin/test"
-    },
-    "devDependencies": {
-        "typescript": "^2.0.3",
-        "vscode": "^1.0.0",
-        "mocha": "^2.3.3",
-        "eslint": "^3.6.0",
-        "@types/node": "^6.0.40",
-        "@types/mocha": "^2.2.32"
-    }
+	"name": "Scss2Css",
+	"displayName": "Scss2Css",
+	"description": "compile SASS/SCSS to css",
+	"version": "0.0.1",
+	"publisher": "martenkoetsier",
+	"icon": "icon.jpeg",
+	"engines": {
+		"vscode": "^1.11.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/martenkoetsier/scss2css-vscode.git"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "Scss2Css.compileAll",
+				"title": "Compile all SCSS/SASS files to css"
+			}
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Scss2Css configuration",
+			"properties": {
+				"Scss2Css.compileAfterSave": {
+					"type": "boolean",
+					"default": true,
+					"description": "Whether to compile upon saving a file"
+				},
+				"Scss2Css.compileAllAfterSaveExcluded": {
+					"type": "boolean",
+					"default": true,
+					"description": "Whether to compile all files upon saving a file that is excluded because of the excludeRegex setting"
+				},
+				"Scss2Css.formats": {
+					"type": "array",
+					"default": [
+						{
+							"format": "expanded",
+							"extension": ".css"
+						},
+						{
+							"format": "compressed",
+							"extension": ".min.css"
+						}
+					],
+					"description": "css output compilation method \"nested\", \"expanded\", \"compact\" or \"compressed\" ."
+				},
+				"Scss2Css.excludeRegex": {
+					"type": "string",
+					"default": "^_",
+					"description": "Regular expression used to exclude filenames, the default is '^_', i.e. all files starting with underscore"
+				},
+				"Scss2Css.excludeDirRegex": {
+					"type": "string",
+					"default": "^vendor",
+					"description": "Regular expression used to exclude directories, the default is '^vendor', i.e. all files of which the path starts with 'vendor' are excluded."
+				},
+				"Scss2Css.sourceDir": {
+					"type": "string",
+					"default": "",
+					"description": "The directory (within the current workspace folder) to scan for scss files, the default is ''"
+				},
+				"Scss2Css.targetDir": {
+					"type": "string",
+					"default": "",
+					"description": "The directory where compiled files are placed (can be relative), the default is the current directory"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "node ./node_modules/vscode/bin/test"
+	},
+	"devDependencies": {
+		"typescript": "^2.0.3",
+		"vscode": "^1.0.0",
+		"mocha": "^2.3.3",
+		"eslint": "^3.6.0",
+		"@types/node": "^6.0.40",
+		"@types/mocha": "^2.2.32"
+	},
+	"__metadata": {
+		"id": "99800a0c-6379-48cd-82ab-e5fcdef70824",
+		"publisherId": "40285cb0-d2a0-417c-b2ba-a0afd60f213c",
+		"publisherDisplayName": "martenkoetsier"
+	}
 }
