@@ -1,40 +1,48 @@
 # scss2css-vscode
 
-VSCode scss 编译成 css 插件
+VSCode plugin for compiling scss into css
+
+This is a fork of a project of cyyjs: https://github.com/cyyjs/scss2css-vscode. That version has two issues that are solved here:
+- There is no option to setup a specific source directory;
+- The documentation is in Chinese.
 
 ## Features
 
-保存后自动将 scss 文件编译为 css 文件
+After saving a scss file in the source directory, this plugin automatically compiles the configured scss files into css files.
 
 ## Extension Settings
 
--   `Scss2Css.compileAfterSave`: 是否保存时编译
--   `Scss2Css.formats`: 编译的方式
+-   `Scss2Css.compileAfterSave`: Whether to compile upon saving a file
+-   `Scss2Css.formats`: Compilation method (see formats below)
+-   `Scss2Css.excludeRegex`: Regular expression used to exclude filenames, the default is `^_`, i.e. all files starting with underscore
+-   `Scss2Css.sourceDir`: The directory to scan for scss files, the default is the current directory
+-   `Scss2Css.targetDir`: The directory where compiled files are placed (can be relative), the default is the current directory
 
--   `Scss2Css.excludeRegex`: 排除文件名正则表达式
--   `Scss2Css.targetDir`: 生成后的目录，默认为当前目录
--   `Scss2Css.mainFile` : 要编译的主文件名，不设置则编译当前保存的文件
+## Formats description
 
-## formats 说明
+Configure as an array to compile multiple types at the same time.
 
-配置接收一个数组，可同时编译多种类型
-
-例如：
+Example：
 
 ```js
 {
     "Scss2Css.formats": [{
-        "format": "expanded", // 编译类型
-        "extension": ".css" // 编译后文件后缀
+        "format": "expanded",
+        "extension": ".css"
+    }, {
+        "format": "compressed",
+        "extension": ".min.css"
     }]
 }
 ```
 
-| format     | 描述                                                   |
-| ---------- | ------------------------------------------------------ |
-| nested     | 嵌套格式，嵌套格式如果出现子级样式，会往右边缩进       |
-| compact    | 紧凑格式，输出 css 格式                                |
-| expanded   | 扩展格式，这种格式便于阅读，平时一般都是这种格式写 css |
-| compressed | 压缩格式，一般用于发布文档，最后输出                   |
+| Format     | Description                                             |
+| ---------- | ------------------------------------------------------- |
+| nested     | With indented child styles                              |
+| compact    | Compact css output                                      |
+| expanded   | Extended format, which is easy to read, for development |
+| compressed | Compressed css for production                           |
 
-**Enjoy!**
+**English documentation**
+
+I am not familiar with the Chinese language. I have used Google Translate and my own English language skills to translate this plugin.
