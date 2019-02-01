@@ -1,3 +1,7 @@
+> WARNING
+>
+> This plugin is not "ready", as in it has not been properly packaged or tested. If you want to use it, install the plugin from cyyjs/scss2css-vscode and replace the `extension.js` and `package.json` files.
+
 # scss2css-vscode
 
 VSCode plugin for compiling scss into css
@@ -76,4 +80,4 @@ Example：
 
 **English documentation**
 
-I am not familiar with the Chinese language. I have used Google Translate and my own English language skills to translate this plugin.
+I am not familiar with the Chinese language. I have used Google Translate, my own English language skills and my insights into the present code to translate the documentation in this plugin.
