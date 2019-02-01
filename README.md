@@ -15,7 +15,8 @@ After saving a scss file in the source directory, this plugin automatically comp
 -   `Scss2Css.compileAfterSave`: Whether to compile upon saving a file
 -   `Scss2Css.formats`: Compilation method (see formats below)
 -   `Scss2Css.excludeRegex`: Regular expression used to exclude filenames, the default is `^_`, i.e. all files starting with underscore
--   `Scss2Css.sourceDir`: The directory to scan for scss files, the default is the current directory
+-   `Scss2Css.excludeDirRegex`: Regular expression used to exclude directories, the default is `^vendor`, i.e. all files of which the path starts with 'vendor' are excluded.
+-   `Scss2Css.sourceDir`: The directory (within the current workspace folder) to scan for scss files, the default is `''`
 -   `Scss2Css.targetDir`: The directory where compiled files are placed (can be relative), the default is the current directory
 
 ## Formats description
