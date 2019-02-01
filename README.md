@@ -6,6 +6,35 @@ This is a fork of a project of cyyjs: https://github.com/cyyjs/scss2css-vscode. 
 - There is no option to setup a specific source directory;
 - The documentation is in Chinese.
 
+The intended workflow is that if some scss file in the workspace is saved, it is automatically complied. If it is a file that is normally excluded (`Scss2Css.excludeRegex` setting), the compile all command is initiated, which compiles all scss files found in the workspace, except those excluded because of either `Scss2Css.excludeRegex` or `Scss2Css.excludeDirRegex`.
+
+Example workflow:
+- store all scss files in `resources/scss/`
+- prefix all 'included' scss files with underscore
+- optionally have some framework, with some scss files, all framework files are in `vendor/`
+- compiled files go to `public/css/`
+
+Settings suggested:
+
+```js
+{
+    "Scss2Css.compileAfterSave": true,
+    "Scss2Css.compileAllAfterSaveExcluded": true,
+    "Scss2Css.formats": [{
+        "format": "expanded",
+        "extension": ".css"
+    }, {
+        "format": "compressed",
+        "extension": ".min.css"
+    }]
+    "Scss2Css.excludeRegex": '^_',
+    "Scss2Css.excludeDirRegex": '^vendor',
+    "Scss2Css.sourceDir": '', // or 'resources/scss/'
+    "Scss2Css.targetDir": 'public/css',
+}
+```
+
+
 ## Features
 
 After saving a scss file in the source directory, this plugin automatically compiles the configured scss files into css files.
@@ -13,6 +42,7 @@ After saving a scss file in the source directory, this plugin automatically comp
 ## Extension Settings
 
 -   `Scss2Css.compileAfterSave`: Whether to compile upon saving a file
+-   `Scss2Css.compileAllAfterSaveExcluded`: Whether to compile all files upon saving a file that is excluded because of the `excludeRegex` setting
 -   `Scss2Css.formats`: Compilation method (see formats below)
 -   `Scss2Css.excludeRegex`: Regular expression used to exclude filenames, the default is `^_`, i.e. all files starting with underscore
 -   `Scss2Css.excludeDirRegex`: Regular expression used to exclude directories, the default is `^vendor`, i.e. all files of which the path starts with 'vendor' are excluded.
